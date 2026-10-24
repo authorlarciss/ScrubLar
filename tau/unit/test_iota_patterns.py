@@ -2,6 +2,7 @@
 
 from nu.iota.public.patterns import (
     EMAIL_PATTERN,
+    INITIALS_PATTERN,
     INN10_PATTERN,
     INN12_PATTERN,
     PASSPORT_PATTERN,
@@ -61,3 +62,37 @@ def test_passport_matches_canonical() -> None:
 
 def test_passport_rejects_no_space() -> None:
     assert PASSPORT_PATTERN.fullmatch("4506123456") is None
+
+
+def test_initials_matches_canonical() -> None:
+    assert INITIALS_PATTERN.fullmatch("Сидоров А.П.")
+
+
+def test_initials_matches_with_spaces_between() -> None:
+    assert INITIALS_PATTERN.fullmatch("Сидоров А. П.")
+    assert INITIALS_PATTERN.fullmatch("Иванова А. И.")
+
+
+def test_initials_matches_short_surname() -> None:
+    assert INITIALS_PATTERN.fullmatch("Ильин В.С.")
+
+
+def test_initials_rejects_full_name() -> None:
+    assert INITIALS_PATTERN.fullmatch("Иванов Иван Иванович") is None
+
+
+def test_initials_rejects_single_initial() -> None:
+    assert INITIALS_PATTERN.fullmatch("Сидоров А.") is None
+
+
+def test_initials_rejects_missing_second_dot() -> None:
+    assert INITIALS_PATTERN.fullmatch("Сидоров А.П") is None
+
+
+def test_initials_rejects_lowercase() -> None:
+    assert INITIALS_PATTERN.fullmatch("сидоров а.п.") is None
+
+
+def test_initials_rejects_short_word_before_initials() -> None:
+    # "А.П." alone — no surname, must not match.
+    assert INITIALS_PATTERN.fullmatch("А.П.") is None

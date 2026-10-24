@@ -14,6 +14,7 @@ import re
 
 from nu.iota.public.patterns import (
     EMAIL_PATTERN,
+    INITIALS_PATTERN,
     INN10_PATTERN,
     INN12_PATTERN,
     PASSPORT_PATTERN,
@@ -26,6 +27,7 @@ from nu.psi.contracts.alpha import PIIEntity, PIIKind
 
 __all__ = [
     "find_emails",
+    "find_initials",
     "find_inns",
     "find_passports",
     "find_phones",
@@ -60,6 +62,15 @@ def find_phones(text: str) -> tuple[PIIEntity, ...]:
 
 def find_passports(text: str) -> tuple[PIIEntity, ...]:
     return tuple(_collect(PASSPORT_PATTERN, text, PIIKind.PASSPORT))
+
+
+def find_initials(text: str) -> tuple[PIIEntity, ...]:
+    """Find surname + initials ("Сидоров А.П.") as PIIKind.NAME.
+
+    Full names (no initials, dots) are out of scope — those go through
+    NER in epsilon. See ADR-0008.
+    """
+    return tuple(_collect(INITIALS_PATTERN, text, PIIKind.NAME))
 
 
 def find_snils(text: str) -> tuple[PIIEntity, ...]:
@@ -101,6 +112,7 @@ def find_structured_pii(text: str) -> tuple[PIIEntity, ...]:
     entities.extend(find_snils(text))
     entities.extend(find_phones(text))
     entities.extend(find_passports(text))
+    entities.extend(find_initials(text))
     return _resolve_overlaps(entities)
 
 

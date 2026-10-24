@@ -11,6 +11,7 @@ import re
 
 __all__ = [
     "EMAIL_PATTERN",
+    "INITIALS_PATTERN",
     "INN10_PATTERN",
     "INN12_PATTERN",
     "PASSPORT_PATTERN",
@@ -54,3 +55,15 @@ INN12_PATTERN = re.compile(r"(?<!\d)\d{12}(?!\d)", re.ASCII)
 # between groups. Canonical "XX XX NNNNNN" or combined "XXXX NNNNNN".
 # No checksum; conservative format only to reduce false positives.
 PASSPORT_PATTERN = re.compile(r"\b\d{2}\s?\d{2}\s+\d{6}\b", re.ASCII)
+
+# Surname + initials: "Сидоров А.П.", "Иванова А. И.".
+# Requires 3+ chars in surname (excludes 1-letter words), both
+# initials capitalized with mandatory dots, no newlines between.
+#
+# Known false positive: "Москва А.С." — rare in business documents;
+# documented in tests. Mitigation in v0.2: surname suffix check or
+# NER cross-validation.
+INITIALS_PATTERN = re.compile(
+    r"(?<![А-ЯЁа-яё])[А-ЯЁ][а-яё]{2,}[ \t]+[А-ЯЁ]\.[ \t]?[А-ЯЁ]\.",
+    re.ASCII,
+)

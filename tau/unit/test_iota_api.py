@@ -2,6 +2,7 @@
 
 from nu.iota.public.api import (
     find_emails,
+    find_initials,
     find_inns,
     find_passports,
     find_phones,
@@ -123,3 +124,36 @@ def test_find_inns_skips_invalid_12_digit() -> None:
     """12-digit number, matches INN12, fails checksum — loop-back branch."""
     # 500100732257: second check fails; INN10 doesn't match inside 12 digits.
     assert find_inns("500100732257") == ()
+
+
+def test_find_initials_extracts() -> None:
+    entities = find_initials("Подписал Сидоров А.П. и Иванова А. И.")
+    assert len(entities) == 2
+    assert {e.value for e in entities} == {"Сидоров А.П.", "Иванова А. И."}
+    assert all(e.kind.name == "NAME" for e in entities)
+
+
+def test_find_initials_rejects_full_name() -> None:
+    assert find_initials("Иванов Иван Иванович") == ()
+
+
+def test_find_initials_known_false_positive_geography() -> None:
+    """Known limitation: 'Москва А.С.' matches (city + initials).
+
+    Rare in business documents; mitigation in v0.2 (surname suffix
+    check or NER cross-validation).
+    """
+    entities = find_initials("Москва А.С.")
+    assert len(entities) == 1  # documented false positive
+
+
+def test_find_structured_pii_includes_initials() -> None:
+    text = "Клиент: Сидоров А.П., телефон +79991234567, email test@example.com."
+    entities = find_structured_pii(text)
+    kinds = [e.kind.name for e in entities]
+    assert "NAME" in kinds
+    assert "PHONE" in kinds
+    assert "EMAIL" in kinds
+    # Non-overlapping, sorted
+    for prev, curr in zip(entities, entities[1:], strict=False):
+        assert prev.end <= curr.start

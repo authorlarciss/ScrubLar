@@ -1,6 +1,7 @@
 """Public API of the iota module: structured PII detection."""
 
 from nu.iota.public.api import find_emails as find_emails
+from nu.iota.public.api import find_initials as find_initials
 from nu.iota.public.api import find_inns as find_inns
 from nu.iota.public.api import find_passports as find_passports
 from nu.iota.public.api import find_phones as find_phones
@@ -12,6 +13,7 @@ from nu.iota.public.validators import snils_valid as snils_valid
 
 __all__ = [
     "find_emails",
+    "find_initials",
     "find_inns",
     "find_passports",
     "find_phones",
