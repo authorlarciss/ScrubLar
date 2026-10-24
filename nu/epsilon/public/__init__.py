@@ -1,4 +1,9 @@
-"""Публичный API модуля epsilon.
+"""Public API of the epsilon module.
 
-Наполняется в конкретном проекте: интерфейсы, типы, фабрики.
+NER-based PII detectors (currently: person names via Natasha).
 """
+
+from nu.epsilon.public.interfaces import INameDetector as INameDetector
+from nu.epsilon.public.resolver import EpsilonResolver as EpsilonResolver
+
+__all__ = ["EpsilonResolver", "INameDetector"]

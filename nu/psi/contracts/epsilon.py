@@ -1,6 +1,6 @@
-"""Контракт epsilon для внешнего использования.
+"""Contract for nu.epsilon — NER detectors."""
 
-Публичный API пока пуст. Наполняется в конкретном проекте.
-"""
+from nu.epsilon.public import EpsilonResolver as EpsilonResolver
+from nu.epsilon.public import INameDetector as INameDetector
 
-__all__ = []
+__all__ = ["EpsilonResolver", "INameDetector"]
