@@ -145,6 +145,7 @@ modules = [
 ignore_imports = [
     "nu.psi.contracts.** -> nu.alpha.**",
     "nu.psi.contracts.** -> nu.beta.**",
+    "nu.psi.contracts.** -> nu.iota.**",
     "nu.psi.contracts.** -> nu.sigma.**",
     "nu.psi.contracts.** -> nu.mu.**",
 ]
