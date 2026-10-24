@@ -17,8 +17,7 @@ dependencies = [
     "python-docx>=1.1",
     "python-multipart>=0.0.9",
     "pymorphy3>=2.0",
-    "transformers>=4.45",
-    "torch>=2.4",
+    "natasha>=1.6",
 ]
 
 [project.optional-dependencies]
@@ -50,19 +49,6 @@ show_error_context = true
 pretty = true
 exclude = ["^\\.venv/", "^build/", "^dist/"]
 
-# Нетипизированные библиотеки — точечно, не глобально.
-# Глобальный ignore_missing_imports скрыл бы реальные ошибки
-# в типизированных пакетах.
-[[tool.mypy.overrides]]
-module = [
-    "transformers.*",
-    "torch.*",
-    "datasets.*",
-    "huggingface_hub.*",
-    "safetensors.*",
-]
-ignore_missing_imports = true
-follow_imports = "skip"
 
 # ---------- Ruff ----------
 [tool.ruff]
