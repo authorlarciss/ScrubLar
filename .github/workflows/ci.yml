@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - nu
+      - omega
+      - "omicron/**"
+      - "iota/**"
+      - "alpha/**"
+      - "beta/**"
+      - "gamma/**"
+      - "delta/**"
+      - "epsilon/**"
+      - "zeta/**"
+      - "lambda/**"
+      - "tau/**"
+      - "sigma/**"
+  pull_request:
+    branches:
+      - nu
+      - omega
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Lint (ruff check)
+        run: .venv/bin/ruff check nu tau
+
+      - name: Check formatting (ruff format)
+        run: .venv/bin/ruff format --check nu tau
+
+      - name: Check import rules (import-linter)
+        run: .venv/bin/lint-imports
+
+      - name: Type check (mypy)
+        run: .venv/bin/mypy nu tau
+
+      - name: Run tests
+        run: .venv/bin/pytest

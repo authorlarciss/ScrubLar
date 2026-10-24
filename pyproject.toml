@@ -1,0 +1,250 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "baselar"
+dynamic = ["version"]
+description = "BaseLar — инвариантный шаблон греческих проектов"
+readme = "README.md"
+requires-python = ">=3.13,<3.15"
+authors = [
+    { name = "authorlarciss", email = "author.larciss@gmail.com" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=3.6",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-asyncio>=0.24",
+    "import-linter>=2.0",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "nu.mu.public.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nu*"]
+
+# ---------- Mypy ----------
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+show_error_context = true
+pretty = true
+exclude = ["^\\.venv/", "^build/", "^dist/"]
+
+# Нетипизированные библиотеки — точечно, не глобально.
+# Глобальный ignore_missing_imports скрыл бы реальные ошибки
+# в типизированных пакетах.
+[[tool.mypy.overrides]]
+module = [
+    "transformers.*",
+    "torch.*",
+    "datasets.*",
+    "huggingface_hub.*",
+    "safetensors.*",
+]
+ignore_missing_imports = true
+follow_imports = "skip"
+
+# ---------- Ruff ----------
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["nu", "tau"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nu", "tau"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ---------- Pytest ----------
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --strict-markers --cov=nu --cov-branch --cov-report=term-missing"
+testpaths = ["tau"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "template: tests specific to the BaseLar template; delete or update when domain-specific bootstrap is written",
+]
+
+[tool.coverage.run]
+omit = ["nu/main.py"]
+
+[tool.importlinter]
+root_package = "nu"
+include_external_packages = false
+
+# ============================================================
+# Правило 1. Только psi — к psi.bootstrap/application/context.
+# main.py сюда не входит: он обязан импортировать psi.bootstrap
+# (см. правило 6 — main ограничен psi).
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "Only psi may import psi.bootstrap, psi.application, psi.context"
+type = "forbidden"
+source_modules = [
+    "nu.alpha",
+    "nu.beta",
+    "nu.gamma",
+    "nu.delta",
+    "nu.epsilon",
+    "nu.zeta",
+    "nu.iota",
+    "nu.sigma",
+    "nu.mu",
+]
+forbidden_modules = [
+    "nu.psi.bootstrap",
+    "nu.psi.application",
+    "nu.psi.context",
+]
+
+# ============================================================
+# Правило 2. Модули независимы друг от друга.
+# Все связи — через nu.psi.contracts.
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "Modules are independent"
+type = "independence"
+modules = [
+    "nu.alpha",
+    "nu.beta",
+    "nu.gamma",
+    "nu.delta",
+    "nu.epsilon",
+    "nu.zeta",
+    "nu.iota",
+    "nu.sigma",
+    "nu.mu",
+]
+ignore_imports = [
+    "nu.psi.contracts.** -> nu.alpha.**",
+    "nu.psi.contracts.** -> nu.beta.**",
+    "nu.psi.contracts.** -> nu.sigma.**",
+    "nu.psi.contracts.** -> nu.mu.**",
+]
+unmatched_ignore_imports_alerting = "error"
+
+# ============================================================
+# Правило 3. Psi и main не импортируют _internal модулей напрямую.
+# Исключение: через public/resolver.py — единая разрешённая
+# точка доступа (ADR-0002, resolver pattern).
+# Zeta НЕ входит в исключение — её _internal закрыт навсегда.
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "Psi and main do not import _internal except via resolver"
+type = "forbidden"
+source_modules = ["nu.psi", "nu.main"]
+forbidden_modules = [
+    "nu.alpha._internal",
+    "nu.beta._internal",
+    "nu.gamma._internal",
+    "nu.delta._internal",
+    "nu.epsilon._internal",
+    "nu.zeta._internal",
+    "nu.iota._internal",
+    "nu.sigma._internal",
+    "nu.mu._internal",
+]
+ignore_imports = [
+    # Resolver chain: psi -> nu.X.public.resolver -> nu.X._internal.*
+    # Только для модулей, у которых resolver реально существует.
+    # Zeta исключена (её _internal не импортируется никем — см. правило 4).
+    "nu.beta.public.resolver -> nu.beta._internal.*",
+    "nu.sigma.public.resolver -> nu.sigma._internal.*",
+]
+unmatched_ignore_imports_alerting = "error"
+
+# ============================================================
+# Правило 4. Zeta._internal не импортируется никем.
+# Ни одним модулем, ни psi, ни main, ни через resolver.
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "Zeta _internal is never imported"
+type = "forbidden"
+source_modules = [
+    "nu.alpha",
+    "nu.beta",
+    "nu.gamma",
+    "nu.delta",
+    "nu.epsilon",
+    "nu.iota",
+    "nu.sigma",
+    "nu.mu",
+    "nu.psi",
+    "nu.main",
+]
+forbidden_modules = ["nu.zeta._internal"]
+
+# ============================================================
+# Правило 5. Public не импортирует _internal (кроме resolver).
+# Закрывает дыру, заявленную в ADR-0002, но не проверявшуюся.
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "Public does not import _internal except via resolver"
+type = "forbidden"
+source_modules = [
+    "nu.alpha.public",
+    "nu.beta.public",
+    "nu.gamma.public",
+    "nu.delta.public",
+    "nu.epsilon.public",
+    "nu.zeta.public",
+    "nu.iota.public",
+    "nu.sigma.public",
+    "nu.mu.public",
+]
+forbidden_modules = [
+    "nu.alpha._internal",
+    "nu.beta._internal",
+    "nu.gamma._internal",
+    "nu.delta._internal",
+    "nu.epsilon._internal",
+    "nu.zeta._internal",
+    "nu.iota._internal",
+    "nu.sigma._internal",
+    "nu.mu._internal",
+]
+ignore_imports = [
+    "nu.beta.public.resolver -> nu.beta._internal.*",
+    "nu.sigma.public.resolver -> nu.sigma._internal.*",
+]
+unmatched_ignore_imports_alerting = "error"
+
+# ============================================================
+# Правило 6. main.py импортирует только из nu.psi.
+# main — тонкий лаунчер. Всё остальное — через psi.bootstrap.
+# ============================================================
+[[tool.importlinter.contracts]]
+name = "main.py imports only from nu.psi"
+type = "forbidden"
+source_modules = ["nu.main"]
+forbidden_modules = [
+    "nu.alpha",
+    "nu.beta",
+    "nu.gamma",
+    "nu.delta",
+    "nu.epsilon",
+    "nu.zeta",
+    "nu.iota",
+    "nu.sigma",
+    "nu.mu",
+]
+allow_indirect_imports = true

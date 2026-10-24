@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://pre-commit.com/schema.json
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (strict, nu + tau)
+        entry: .venv/bin/mypy
+        language: system
+        types_or: [ python, pyi ]
+        args: [ nu, tau, --config-file=pyproject.toml ]
+        pass_filenames: false
