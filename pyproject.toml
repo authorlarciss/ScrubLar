@@ -49,6 +49,8 @@ show_error_codes = true
 show_error_context = true
 pretty = true
 exclude = ["^\\.venv/", "^build/", "^dist/"]
+mypy_path = ["."]
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = ["natasha.*"]

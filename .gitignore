@@ -27,6 +27,7 @@ htmlcov/
 .tox/
 .dmypy.json
 tmp/
+*.report.json
 
 # IDE
 .idea/

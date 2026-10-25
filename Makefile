@@ -1,4 +1,4 @@
-.PHONY: help install install-pip lock lint lint-imports typecheck format format-check check ci test run clean
+.PHONY: help install install-pip lock lint lint-imports typecheck format format-check check ci test run evaluate clean
 
 PYTHON := python3
 VENV := .venv
@@ -22,6 +22,7 @@ help:
 	@echo "  make ci            — алиас make check"
 	@echo "  make test          — pytest"
 	@echo "  make run           — запуск nu.main"
+	@echo "  make evaluate      — запуск omega.scripts.evaluate"
 	@echo "  make clean         — удалить кэши и venv"
 
 install:
@@ -64,6 +65,9 @@ test:
 
 run:
 	$(VENV)/bin/python -m nu.main
+
+evaluate:
+	PYTHONPATH=. $(VENV)/bin/python omega/scripts/evaluate.py $(ARGS)
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
