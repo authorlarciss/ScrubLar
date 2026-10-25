@@ -66,3 +66,18 @@ def test_inn12_invalid_first_check() -> None:
     """First check digit (index 10) wrong — returns False at line 51."""
     # Valid INN12: 500100732259. Index 10 ("5") → "9" fails first check.
     assert not inn12_valid("500100732299")
+
+
+@pytest.mark.parametrize("value", ["0000000000", "1111111111", "9999999999"])
+def test_inn10_rejects_all_same_digit(value: str) -> None:
+    assert not inn10_valid(value)
+
+
+@pytest.mark.parametrize("value", ["000000000000", "111111111111"])
+def test_inn12_rejects_all_same_digit(value: str) -> None:
+    assert not inn12_valid(value)
+
+
+@pytest.mark.parametrize("value", ["00000000000", "11111111111"])
+def test_snils_rejects_all_same_digit(value: str) -> None:
+    assert not snils_valid(value)

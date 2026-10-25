@@ -25,15 +25,27 @@ def _snils_control(digits9: str) -> int:
 
 
 def snils_valid(digits11: str) -> bool:
-    """Validate 11-digit SNILS (9 base + 2 check)."""
+    """Validate 11-digit SNILS (9 base + 2 check).
+
+    Rejects all-same-digit values (00000000000, 11111111111, ...):
+    checksum passes for them, but they are not real SNILS.
+    """
     if len(digits11) != 11 or not digits11.isdigit():
+        return False
+    if len(set(digits11)) == 1:
         return False
     return _snils_control(digits11[:9]) == int(digits11[-2:])
 
 
 def inn10_valid(digits10: str) -> bool:
-    """Validate 10-digit INN (legal entity)."""
+    """Validate 10-digit INN (legal entity).
+
+    Rejects all-same-digit values: checksum passes for them, but they
+    are not real INN.
+    """
     if len(digits10) != 10 or not digits10.isdigit():
+        return False
+    if len(set(digits10)) == 1:
         return False
     weights = (2, 4, 10, 3, 5, 9, 4, 6, 8)
     total = sum(int(d) * w for d, w in zip(digits10[:9], weights, strict=True))
@@ -41,8 +53,14 @@ def inn10_valid(digits10: str) -> bool:
 
 
 def inn12_valid(digits12: str) -> bool:
-    """Validate 12-digit INN (individual)."""
+    """Validate 12-digit INN (individual).
+
+    Rejects all-same-digit values: checksum passes for them, but they
+    are not real INN.
+    """
     if len(digits12) != 12 or not digits12.isdigit():
+        return False
+    if len(set(digits12)) == 1:
         return False
     w11 = (7, 2, 4, 10, 3, 5, 9, 4, 6, 8)
     w12 = (3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8)
