@@ -38,3 +38,11 @@ def test_bootstrap_registers_beta_resolver() -> None:
     app = build_application()
     resolver = app.context.resolve("beta_resolver")
     assert isinstance(resolver, BetaResolver)
+
+
+def test_bootstrap_registers_detector() -> None:
+    app = build_application()
+    detector = app.context.resolve("detector")  # если Context.resolve — так
+    from nu.beta.public import IDetector
+
+    assert isinstance(detector, IDetector)

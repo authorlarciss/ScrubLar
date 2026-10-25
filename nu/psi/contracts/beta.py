@@ -1,8 +1,6 @@
-"""Контракт beta для внешнего использования."""
+"""Contract for nu.beta."""
 
 from nu.beta.public import BetaResolver as BetaResolver
-from nu.beta.public import IEventBus as IEventBus
-from nu.beta.public import IProcessor as IProcessor
-from nu.beta.public import IWorkflow as IWorkflow
+from nu.beta.public import IDetector as IDetector
 
-__all__ = ["IProcessor", "IWorkflow", "IEventBus", "BetaResolver"]
+__all__ = ["BetaResolver", "IDetector"]

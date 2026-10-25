@@ -4,7 +4,6 @@ Alphabet of the ScrubLar domain: PII types, errors, and (inherited
 from BaseLar) the IEvent marker.
 """
 
-from nu.alpha.public.events import IEvent as IEvent
 from nu.alpha.public.types import (
     DetectionConfig as DetectionConfig,
 )
@@ -40,7 +39,6 @@ __all__ = [
     "DetectionConfig",
     "DetectionError",
     "DetectionReport",
-    "IEvent",
     "MaskResult",
     "MaskingError",
     "ParsingError",

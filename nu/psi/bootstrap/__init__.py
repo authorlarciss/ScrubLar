@@ -1,25 +1,32 @@
-"""Сборка приложения: создание контекста и регистрация модулей."""
+"""Bootstrap: build the ScrubLar application."""
+
+from __future__ import annotations
 
 from nu.psi.application import Application
 from nu.psi.context import Context
-from nu.psi.contracts.beta import BetaResolver
-from nu.psi.contracts.sigma import LoggingConfig, SigmaResolver
+
+__all__ = ["build_application"]
 
 
 def build_application() -> Application:
-    """Создать Application со всеми зарегистрированными модулями."""
+    from nu.beta.public import BetaResolver
+    from nu.epsilon.public import EpsilonResolver
+    from nu.sigma.public import LoggingConfig, SigmaResolver
+
     context = Context()
 
-    # 1. Логирование — первым, до всех остальных модулей
     sigma_resolver = SigmaResolver()
     sigma_resolver.setup_logging(LoggingConfig(level="INFO", format="text"))
     context.register("sigma_resolver", sigma_resolver)
 
-    # 2. Остальные модули
+    epsilon_resolver = EpsilonResolver()
+    context.register("epsilon_resolver", epsilon_resolver)
+
     beta_resolver = BetaResolver()
     context.register("beta_resolver", beta_resolver)
 
+    name_detector = epsilon_resolver.make_name_detector()
+    detector = beta_resolver.make_detector(name_detector)
+    context.register("detector", detector)
+
     return Application(context)
-
-
-__all__ = ["build_application"]
