@@ -10,6 +10,7 @@ __all__ = ["build_application"]
 
 def build_application() -> Application:
     from nu.beta.public import BetaResolver
+    from nu.delta.public import DeltaResolver
     from nu.epsilon.public import EpsilonResolver
     from nu.sigma.public import LoggingConfig, SigmaResolver
 
@@ -31,5 +32,8 @@ def build_application() -> Application:
 
     masker = beta_resolver.make_masker()
     context.register("masker", masker)
+
+    delta_resolver = DeltaResolver()
+    context.register("delta_resolver", delta_resolver)
 
     return Application(context)

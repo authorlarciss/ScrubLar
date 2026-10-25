@@ -46,3 +46,12 @@ def test_bootstrap_registers_detector() -> None:
     from nu.beta.public import IDetector
 
     assert isinstance(detector, IDetector)
+
+
+def test_bootstrap_registers_delta_resolver() -> None:
+    from nu.delta.public import DeltaResolver
+    from nu.psi.bootstrap import build_application
+
+    app = build_application()
+    resolver = app.context.resolve("delta_resolver")  # см. API Context
+    assert isinstance(resolver, DeltaResolver)

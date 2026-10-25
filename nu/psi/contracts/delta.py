@@ -1,6 +1,6 @@
-"""Контракт delta для внешнего использования.
+"""Contract for nu.delta."""
 
-Публичный API пока пуст. Наполняется в конкретном проекте.
-"""
+from nu.delta.public import DeltaResolver as DeltaResolver
+from nu.delta.public import IDocumentParser as IDocumentParser
 
-__all__ = []
+__all__ = ["DeltaResolver", "IDocumentParser"]

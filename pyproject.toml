@@ -135,6 +135,7 @@ modules = [
 ignore_imports = [
     "nu.psi.contracts.** -> nu.alpha.**",
     "nu.psi.contracts.** -> nu.beta.**",
+    "nu.psi.contracts.** -> nu.delta.**",
     "nu.psi.contracts.** -> nu.epsilon.**",
     "nu.psi.contracts.** -> nu.iota.**",
     "nu.psi.contracts.** -> nu.sigma.**",
@@ -168,6 +169,7 @@ ignore_imports = [
     # Только для модулей, у которых resolver реально существует.
     # Zeta исключена (её _internal не импортируется никем — см. правило 4).
     "nu.beta.public.resolver -> nu.beta._internal.*",
+    "nu.delta.public.resolver -> nu.delta._internal.*",
     "nu.epsilon.public.resolver -> nu.epsilon._internal.*",
     "nu.sigma.public.resolver -> nu.sigma._internal.*",
 ]
@@ -225,6 +227,7 @@ forbidden_modules = [
 ]
 ignore_imports = [
     "nu.beta.public.resolver -> nu.beta._internal.*",
+    "nu.delta.public.resolver -> nu.delta._internal.*",
     "nu.epsilon.public.resolver -> nu.epsilon._internal.*",
     "nu.sigma.public.resolver -> nu.sigma._internal.*",
 ]
