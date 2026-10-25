@@ -29,6 +29,7 @@ dev = [
     "pytest-cov>=5.0",
     "pytest-asyncio>=0.24",
     "import-linter>=2.0",
+    "httpx2>=2.0",
 ]
 
 [tool.setuptools.dynamic]
@@ -137,6 +138,7 @@ ignore_imports = [
     "nu.psi.contracts.** -> nu.beta.**",
     "nu.psi.contracts.** -> nu.delta.**",
     "nu.psi.contracts.** -> nu.epsilon.**",
+    "nu.psi.contracts.** -> nu.gamma.**",
     "nu.psi.contracts.** -> nu.iota.**",
     "nu.psi.contracts.** -> nu.sigma.**",
     "nu.psi.contracts.** -> nu.mu.**",
@@ -171,6 +173,7 @@ ignore_imports = [
     "nu.beta.public.resolver -> nu.beta._internal.*",
     "nu.delta.public.resolver -> nu.delta._internal.*",
     "nu.epsilon.public.resolver -> nu.epsilon._internal.*",
+    "nu.gamma.public.resolver -> nu.gamma._internal.*",
     "nu.sigma.public.resolver -> nu.sigma._internal.*",
 ]
 unmatched_ignore_imports_alerting = "error"
@@ -229,6 +232,7 @@ ignore_imports = [
     "nu.beta.public.resolver -> nu.beta._internal.*",
     "nu.delta.public.resolver -> nu.delta._internal.*",
     "nu.epsilon.public.resolver -> nu.epsilon._internal.*",
+    "nu.gamma.public.resolver -> nu.gamma._internal.*",
     "nu.sigma.public.resolver -> nu.sigma._internal.*",
 ]
 unmatched_ignore_imports_alerting = "error"

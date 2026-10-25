@@ -55,3 +55,20 @@ def test_bootstrap_registers_delta_resolver() -> None:
     app = build_application()
     resolver = app.context.resolve("delta_resolver")  # см. API Context
     assert isinstance(resolver, DeltaResolver)
+
+
+def test_bootstrap_registers_scrub_service() -> None:
+    from nu.psi.bootstrap import build_application
+    from nu.psi.contracts.gamma import IScrubService
+
+    app = build_application()
+    service = app.context.resolve("scrub_service")
+    assert isinstance(service, IScrubService)
+
+
+def test_bootstrap_returns_scrublar_application() -> None:
+    from nu.psi.application import ScrubLarApplication
+    from nu.psi.bootstrap import build_application
+
+    app = build_application()
+    assert isinstance(app, ScrubLarApplication)

@@ -1,4 +1,7 @@
-"""Публичный API модуля gamma.
+"""Public API of the gamma module."""
 
-Наполняется в конкретном проекте: интерфейсы, типы, фабрики.
-"""
+from nu.gamma.public.interfaces import IScrubService as IScrubService
+from nu.gamma.public.interfaces import ScrubResult as ScrubResult
+from nu.gamma.public.resolver import GammaResolver as GammaResolver
+
+__all__ = ["GammaResolver", "IScrubService", "ScrubResult"]

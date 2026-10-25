@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
-from nu.psi.application import Application
+from nu.psi.application import ScrubLarApplication
 from nu.psi.context import Context
 
 __all__ = ["build_application"]
 
 
-def build_application() -> Application:
+def build_application() -> ScrubLarApplication:
     from nu.beta.public import BetaResolver
     from nu.delta.public import DeltaResolver
     from nu.epsilon.public import EpsilonResolver
+    from nu.gamma.public import GammaResolver
+    from nu.psi.scrub_service import ScrubService
     from nu.sigma.public import LoggingConfig, SigmaResolver
 
     context = Context()
@@ -36,4 +38,14 @@ def build_application() -> Application:
     delta_resolver = DeltaResolver()
     context.register("delta_resolver", delta_resolver)
 
-    return Application(context)
+    gamma_resolver = GammaResolver()
+    context.register("gamma_resolver", gamma_resolver)
+
+    scrub_service = ScrubService(
+        delta_resolver=delta_resolver,
+        detector=detector,
+        masker=masker,
+    )
+    context.register("scrub_service", scrub_service)
+
+    return ScrubLarApplication(context)

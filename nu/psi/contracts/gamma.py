@@ -1,6 +1,7 @@
-"""Контракт gamma для внешнего использования.
+"""Contract for nu.gamma."""
 
-Публичный API пока пуст. Наполняется в конкретном проекте.
-"""
+from nu.gamma.public import GammaResolver as GammaResolver
+from nu.gamma.public import IScrubService as IScrubService
+from nu.gamma.public import ScrubResult as ScrubResult
 
-__all__ = []
+__all__ = ["GammaResolver", "IScrubService", "ScrubResult"]

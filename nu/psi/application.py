@@ -1,4 +1,6 @@
-"""Базовая реализация IApplication."""
+"""Application entry points."""
+
+from __future__ import annotations
 
 from nu.psi.context import Context
 from nu.psi.contracts.mu import __version__ as __version__
@@ -7,40 +9,52 @@ from nu.psi.interfaces import IApplication
 
 logger = get_logger(__name__)
 
+__all__ = ["Application", "ScrubLarApplication"]
+
 
 class Application(IApplication):
-    """Базовое приложение с DI-контекстом.
-
-    В BaseLar-шаблоне run() — заглушка. В конкретном проекте —
-    наследование и переопределение:
-
-        from nu.psi.application import Application
-        from nu.psi.bootstrap import build_application
-
-        class MyApp(Application):
-            async def run(self) -> None:
-                resolver = self.context.resolve("beta_resolver")
-                workflow = resolver.make_workflow(initial_data=...)
-                await workflow.run([Processor1(), Processor2()])
-                print(f"Result: {workflow.result}")
-
-        app = MyApp(build_application().context)
-        asyncio.run(app.run())
-
-    Такой подход гарантирует, что:
-    - резолвер получен из контекста (не создан напрямую);
-    - реализация workflow скрыта за интерфейсом IWorkflow;
-    - конкретные процессоры — в проекте, не в BaseLar.
-    """
+    """BaseLar base. In ScrubLar, use ScrubLarApplication."""
 
     def __init__(self, context: Context) -> None:
         self.context = context
 
     async def run(self) -> None:
-        """Запуск проекта. В шаблоне — заглушка."""
         logger.info("Application starting, version=%s", __version__)
-        print(f"BaseLar nu v{__version__} — шаблон готов к использованию.")
+        print(f"BaseLar nu v{__version__} — template ready.")
         logger.info("Application finished")
 
 
-__all__ = ["Application"]
+class ScrubLarApplication(Application):
+    """Run FastAPI app via uvicorn on asyncio event loop.
+
+    The app is built from `gamma_resolver.make_app(scrub_service)` —
+    both are in context. Bootstrap registers `gamma_resolver` and
+    `scrub_service`.
+
+    `run()` is not unit-tested: it blocks on uvicorn.Server.serve().
+    HTTP behavior is covered in `test_gamma_api.py` via TestClient;
+    full serve() is exercised manually with `make run`.
+    """
+
+    def __init__(
+        self,
+        context: Context,
+        host: str = "127.0.0.1",
+        port: int = 8000,
+    ) -> None:
+        super().__init__(context)
+        self._host = host
+        self._port = port
+
+    async def run(self) -> None:  # pragma: no cover
+        import uvicorn
+
+        from nu.psi.contracts.gamma import GammaResolver, IScrubService
+
+        resolver: GammaResolver = self.context.resolve("gamma_resolver")
+        service: IScrubService = self.context.resolve("scrub_service")
+        app = resolver.make_app(service)
+        config = uvicorn.Config(app, host=self._host, port=self._port, log_level="info")
+        server = uvicorn.Server(config)
+        logger.info("ScrubLar starting at http://%s:%s", self._host, self._port)
+        await server.serve()
