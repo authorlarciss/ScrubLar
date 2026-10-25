@@ -29,4 +29,7 @@ def build_application() -> Application:
     detector = beta_resolver.make_detector(name_detector)
     context.register("detector", detector)
 
+    masker = beta_resolver.make_masker()
+    context.register("masker", masker)
+
     return Application(context)

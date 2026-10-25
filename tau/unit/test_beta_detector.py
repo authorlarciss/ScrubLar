@@ -73,3 +73,18 @@ def test_detect_sorted_non_overlapping(detector: IDetector) -> None:
     report = detector.detect(text, DetectionConfig())
     for prev, curr in zip(report.entities, report.entities[1:], strict=False):
         assert prev.end <= curr.start
+
+
+def test_detect_and_mask_roundtrip(detector: IDetector) -> None:
+    """Full pipeline: detect -> mask on mixed PII."""
+    from nu.beta.public import BetaResolver
+
+    masker = BetaResolver().make_masker()
+    text = "Клиент Иванов Иван Иванович, телефон +79991234567, email test@example.com."
+    report = detector.detect(text, DetectionConfig())
+    result = masker.mask(text, report)
+    assert "<NAME_1>" in result.masked_text
+    assert "<PHONE_1>" in result.masked_text
+    assert "<EMAIL_1>" in result.masked_text
+    assert "Иванов" not in result.masked_text
+    assert "+79991234567" not in result.masked_text
